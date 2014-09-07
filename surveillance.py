@@ -48,6 +48,10 @@ BEEP_COOLDOWN_TIME = 60.0
 # Period (in seconds) used for saving a frame unconditionally for monitoring/debug purpose
 MONITORING_PERIOD = 900
 
+# Name of the directory to save image to : also impact how often a new directory is created.
+CAPTURE_NAME = "%Y-%m-%d"
+#CAPTURE_NAME = "%Y-%m-%d_%Hh"
+
 def byteToInt(byteVal):
 	return struct.unpack('B', byteVal[0])[0]
 
@@ -135,7 +139,7 @@ captureInProgress = False
 
 msg = bytearray()
 
-capturePath = SAVE_DIR + time.strftime("%Y-%m-%d_%Hh")
+capturePath = SAVE_DIR + time.strftime(CAPTURE_NAME)
 if not os.path.exists(capturePath): 
 	os.makedirs(capturePath)
 video_out = cv2.VideoWriter(capturePath+"/"+'capture.avi',cv.CV_FOURCC('X','V','I','D'), 4.0, (640,480))
@@ -392,7 +396,7 @@ try:
 									capturedImageIndex = 0
 														
 									# Create new dir for storing this sequence
-									capturePath = SAVE_DIR + time.strftime("%Y-%m-%d_%Hh")
+									capturePath = SAVE_DIR + time.strftime(CAPTURE_NAME)
 									# This is a new day : create directory
 									if not os.path.exists(capturePath): 
 										os.makedirs(capturePath)
@@ -400,7 +404,7 @@ try:
 										# reinitialize daily video file (note : will overwrite exiting one from the same day if it already exists, because
 										# there is no way to reopen an existing file with VideoWriter)
 										print("[CONTROL] opening new video capture file in %s" % capturePath)
-										video_out = cv2.VideoWriter(capturePath+"/"+'capture.avi',cv.CV_FOURCC('X','V','I','D'), 4.0, (640,480))
+										video_out = cv2.VideoWriter(capturePath+"/"+'capture.avi',cv.CV_FOURCC('X','V','I','D'), 30.0, (640,480))
 										if not video_out.isOpened():
 											print("[ERROR] unable to open video file in %s" % capturePath)
 									
