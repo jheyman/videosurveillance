@@ -397,16 +397,21 @@ try:
 														
 									# Create new dir for storing this sequence
 									capturePath = SAVE_DIR + time.strftime(CAPTURE_NAME)
-									# This is a new day : create directory
-									if not os.path.exists(capturePath): 
-										os.makedirs(capturePath)
+									# This is a new day : open new video file (create directory if required)
+									if not os.path.isfile(capturePath+"/"+'capture.avi'): 
+										if not os.path.exists(capturePath):
+											print("[CONTROL] Creating directory %s" % capturePath)
+											os.makedirs(capturePath)
 									
 										# reinitialize daily video file (note : will overwrite exiting one from the same day if it already exists, because
 										# there is no way to reopen an existing file with VideoWriter)
-										print("[CONTROL] opening new video capture file in %s" % capturePath)
 										video_out = cv2.VideoWriter(capturePath+"/"+'capture.avi',cv.CV_FOURCC('X','V','I','D'), 30.0, (640,480))
 										if not video_out.isOpened():
-											print("[ERROR] unable to open video file in %s" % capturePath)
+											print("[ERROR] unable to open video file %s" % capturePath+"/"+'capture.avi')
+										else:
+											print("[CONTROL] opened new video capture file %s" % capturePath+"/"+'capture.avi')
+									else:
+										print("[CONTROL] Reusing existing video file %s" % capturePath+"/"+'capture.avi')
 									
 									# DEBUG
 									dumpDebugImage(capturePath, "absdif_thresholded", thresholded[1], ".png")
@@ -438,7 +443,9 @@ try:
 							# Unconditionally save a frame periodically
 							if (now - latestImageMonitoringTime) > MONITORING_PERIOD:
 								path = SAVE_DIR +time.strftime("%Y-%m-%d")+ "/daily_monitoring"
-								if not os.path.exists(path): os.makedirs(path)
+								if not os.path.exists(path): 
+									print("[CONTROL] daily monitoring: creating folder %s" % path)
+									os.makedirs(path)
 								dumpDebugImage(path, "monitoring", RGBImageNext, ".jpg")
 								# Update monitoring capture time
 								latestImageMonitoringTime = now
