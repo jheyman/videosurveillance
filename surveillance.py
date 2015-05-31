@@ -189,7 +189,9 @@ try:
 			GRAYImageCurrent = None
 			GRAYImagePrev = None
 			
-			RunningAverageImage = None
+			#RunningAverageImage = None
+
+			DetectionMask = cv2.imread("detectionmask.png", cv2.CV_LOAD_IMAGE_GRAYSCALE)
 			
 			# Initialize video file output
 			# capturePath = SAVE_DIR + time.strftime("%Y-%m-%d_%H")
@@ -361,17 +363,20 @@ try:
 							if (imageIndex > 2):
 								d1 = cv2.absdiff(GRAYImagePrev, GRAYImageNext)
 								d2 = cv2.absdiff(GRAYImageCurrent, GRAYImageNext)
+								#result = np.zeros(d1.shape)
 								result = cv2.bitwise_and(d1, d2)
-								thresholded = cv2.threshold(result, ABSDIFF_THRESHOLD_LEVEL, 255, cv2.THRESH_BINARY)
+								#masked_result = np.zeros(result.shape)
+								masked_result = cv2.bitwise_and(result, DetectionMask)
+								thresholded = cv2.threshold(masked_result, ABSDIFF_THRESHOLD_LEVEL, 255, cv2.THRESH_BINARY)
 								nbDifferences = cv2.countNonZero(thresholded[1])
 								
 								# DEBUG / Experimental
-								cv2.accumulateWeighted(GRAYImageNext,RunningAverageImage,0.5)
-								avg_image = cv2.convertScaleAbs(RunningAverageImage)
+								#cv2.accumulateWeighted(GRAYImageNext,RunningAverageImage,0.5)
+								#avg_image = cv2.convertScaleAbs(RunningAverageImage)
 							
 							# Skip detection for the first two frames
 							else:
-								RunningAverageImage = np.float32(GRAYImageNext)
+								#RunningAverageImage = np.float32(GRAYImageNext)
 								nbDifferences = 0
 
 							motion_detected = False
@@ -397,24 +402,30 @@ try:
 														
 									# Create new dir for storing this sequence
 									capturePath = SAVE_DIR + time.strftime(CAPTURE_NAME)
-									# This is a new day : create directory
-									if not os.path.exists(capturePath): 
-										os.makedirs(capturePath)
+									# This is a new day : open new video file (create directory if required)
+									if not os.path.isfile(capturePath+"/"+'capture.avi'): 
+										if not os.path.exists(capturePath):
+											print("[CONTROL] Creating directory %s" % capturePath)
+											os.makedirs(capturePath)
 									
 										# reinitialize daily video file (note : will overwrite exiting one from the same day if it already exists, because
 										# there is no way to reopen an existing file with VideoWriter)
-										print("[CONTROL] opening new video capture file in %s" % capturePath)
 										video_out = cv2.VideoWriter(capturePath+"/"+'capture.avi',cv.CV_FOURCC('X','V','I','D'), 30.0, (640,480))
 										if not video_out.isOpened():
-											print("[ERROR] unable to open video file in %s" % capturePath)
+											print("[ERROR] unable to open video file %s" % capturePath+"/"+'capture.avi')
+										else:
+											print("[CONTROL] opened new video capture file %s" % capturePath+"/"+'capture.avi')
+									else:
+										print("[CONTROL] Reusing existing video file %s" % capturePath+"/"+'capture.avi')
 									
 									# DEBUG
 									dumpDebugImage(capturePath, "absdif_thresholded", thresholded[1], ".png")
-									dumpDebugImage(capturePath, "averageimg", avg_image, ".png")									
-									dumpDebugImage(capturePath, "capture"+str(capturedImageIndex), RGBImagePrev, ".jpg")
-									capturedImageIndex +=1
-									dumpDebugImage(capturePath, "capture"+str(capturedImageIndex), RGBImageCurrent, ".jpg")
-									capturedImageIndex +=1
+									#dumpDebugImage(capturePath, "masked_result", masked_result, ".png")
+									#dumpDebugImage(capturePath, "averageimg", avg_image, ".png")									
+									#dumpDebugImage(capturePath, "capture"+str(capturedImageIndex), RGBImagePrev, ".jpg")
+									#capturedImageIndex +=1
+									#dumpDebugImage(capturePath, "capture"+str(capturedImageIndex), RGBImageCurrent, ".jpg")
+									#capturedImageIndex +=1
 										
 									# Record the last 2 images (N-2 and N-1) and the difference image that triggered the detection
 									recordImage(video_out, RGBImagePrev)
@@ -438,7 +449,9 @@ try:
 							# Unconditionally save a frame periodically
 							if (now - latestImageMonitoringTime) > MONITORING_PERIOD:
 								path = SAVE_DIR +time.strftime("%Y-%m-%d")+ "/daily_monitoring"
-								if not os.path.exists(path): os.makedirs(path)
+								if not os.path.exists(path): 
+									print("[CONTROL] daily monitoring: creating folder %s" % path)
+									os.makedirs(path)
 								dumpDebugImage(path, "monitoring", RGBImageNext, ".jpg")
 								# Update monitoring capture time
 								latestImageMonitoringTime = now
