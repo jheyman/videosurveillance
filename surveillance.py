@@ -86,13 +86,13 @@ def dumpDebugImage(path, name, image, extension):
 	params.append(50)
 	image = cv2.flip(image, -1) # Flip image around both axis
 	# putText args : image, text, origin, font, font scale, color, thickness, line type
-	cv2.putText(image,time.strftime("%Y-%m-%d  %H:%M:%S"),(10,460), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0,0,255), 1, 8)
+	cv2.putText(image,time.strftime("%Y-%m-%d  %H:%M:%S"),(10,460), cv2.FONT_HERSHEY_SIMPLEX, 0.85, (0,0,255), 2, 8)
 	cv2.imwrite(path+"/"+ time.strftime("%Hh%Mm%Ss_")+ name + extension,image, params)
 
 def recordImage(video_file, image):
 	image = cv2.flip(image, -1) # Flip image around both axis
 	# putText args : image, text, origin, font, font scale, color, thickness, line type
-	cv2.putText(image,time.strftime("%Y-%m-%d  %H:%M:%S"),(10,460), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0,0,255), 1, 8)
+	cv2.putText(image,time.strftime("%Y-%m-%d  %H:%M:%S"),(10,460), cv2.FONT_HERSHEY_SIMPLEX, 0.85, (0,0,255), 2, 8)
 	video_file.write(image)
 	
 class RestartException(Exception):
