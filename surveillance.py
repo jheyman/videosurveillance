@@ -190,8 +190,12 @@ try:
 			GRAYImagePrev = None
 			
 			#RunningAverageImage = None
-
-			DetectionMask = cv2.imread("detectionmask.png", cv2.CV_LOAD_IMAGE_GRAYSCALE)
+			if os.path.exists("detectionmask.png"): 
+				DetectionMask = cv2.imread("detectionmask.png", cv2.CV_LOAD_IMAGE_GRAYSCALE)
+			else:
+				DetectionMask = np.zeros((480,640), np.uint8)
+				DetectionMask[:] = 255
+				#dumpDebugImage(capturePath, "generated_mask", DetectionMask, ".png")
 			
 			# Initialize video file output
 			# capturePath = SAVE_DIR + time.strftime("%Y-%m-%d_%H")
