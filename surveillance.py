@@ -46,7 +46,8 @@ NB_IMAGES_CAPTURED_UPON_DETECTION = 10
 BEEP_COOLDOWN_TIME = 60.0
 
 # Period (in seconds) used for saving a frame unconditionally for monitoring/debug purpose
-MONITORING_PERIOD = 900
+# disabled by setting huge value
+MONITORING_PERIOD = 999999999
 
 # Name of the directory to save image to : also impact how often a new directory is created.
 CAPTURE_NAME = "%Y-%m-%d"
@@ -423,7 +424,7 @@ try:
 										print("[CONTROL] Reusing existing video file %s" % capturePath+"/"+'capture.avi')
 									
 									# DEBUG
-									dumpDebugImage(capturePath, "absdif_thresholded", thresholded[1], ".png")
+									#dumpDebugImage(capturePath, "absdif_thresholded", thresholded[1], ".png")
 									#dumpDebugImage(capturePath, "masked_result", masked_result, ".png")
 									#dumpDebugImage(capturePath, "averageimg", avg_image, ".png")									
 									#dumpDebugImage(capturePath, "capture"+str(capturedImageIndex), RGBImagePrev, ".jpg")
