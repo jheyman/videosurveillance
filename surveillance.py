@@ -46,8 +46,7 @@ NB_IMAGES_CAPTURED_UPON_DETECTION = 10
 BEEP_COOLDOWN_TIME = 60.0
 
 # Period (in seconds) used for saving a frame unconditionally for monitoring/debug purpose
-# disabled by setting huge value
-MONITORING_PERIOD = 999999999
+MONITORING_PERIOD = 900
 
 # Name of the directory to save image to : also impact how often a new directory is created.
 CAPTURE_NAME = "%Y-%m-%d"
@@ -179,7 +178,7 @@ try:
 
 			bytes=''
 			latestBeepTime = 0 # To ensure that the first detection will beep
-			latestImageMonitoringTime = time.time()
+			#latestImageMonitoringTime = time.time()
 			socket_error = False
 			nbDifferences = 0
 			imagesToCapture = 0
@@ -452,14 +451,14 @@ try:
 								capturedImageIndex +=1
 							
 							# Unconditionally save a frame periodically
-							if (now - latestImageMonitoringTime) > MONITORING_PERIOD:
-								path = SAVE_DIR +time.strftime("%Y-%m-%d")+ "/daily_monitoring"
-								if not os.path.exists(path): 
-									print("[CONTROL] daily monitoring: creating folder %s" % path)
-									os.makedirs(path)
-								dumpDebugImage(path, "monitoring", RGBImageNext, ".jpg")
-								# Update monitoring capture time
-								latestImageMonitoringTime = now
+							#if (now - latestImageMonitoringTime) > MONITORING_PERIOD:
+							#	path = SAVE_DIR +time.strftime("%Y-%m-%d")+ "/daily_monitoring"
+							#	if not os.path.exists(path): 
+							#		print("[CONTROL] daily monitoring: creating folder %s" % path)
+							#		os.makedirs(path)
+							#	dumpDebugImage(path, "monitoring", RGBImageNext, ".jpg")
+							#	# Update monitoring capture time
+							#	latestImageMonitoringTime = now
 							
 							# Update images for next analysis iteration
 							RGBImagePrev = RGBImageCurrent
