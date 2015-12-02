@@ -217,7 +217,7 @@ try:
 			except socket.error, (value,message): 
 				if sock: 
 					sock.close() 
-				raise RestartException("Could not open socket: " + message)
+				raise RestartException("Could not open socket: " + message, 15)
 			except KeyboardInterrupt:
 				raise
 				
@@ -238,7 +238,7 @@ try:
 						print("[CONTROL] status ko, repeating")
 						#print("status ko: repeat (buff4=%x, mess4and=%x)" % (buffer[4],(MESSAGE_13_1[4] | 0b00010000)))
 						if (i==9):
-							raise RestartException("Max number of status check loops reached")
+							raise RestartException("Max number of status check loops reached", 15)
 				except socket.timeout:
 					raise RestartException("Socket timeout 1", 15)
 				except KeyboardInterrupt:
@@ -249,9 +249,9 @@ try:
 			try:
 				nbReceived = receiveControlPacket(buffer)
 				if (nbReceived != 13):
-					raise RestartException("Expected 13 bytes, received %d" % nbReceived)
+					raise RestartException("Expected 13 bytes, received %d" % nbReceived, 15)
 			except socket.timeout:
-				raise RestartException("Socket timeout 2")
+				raise RestartException("Socket timeout 2", 15)
 			except KeyboardInterrupt:
 				raise
 
@@ -262,10 +262,10 @@ try:
 				if(nbReceived == 42):
 					print("[CONTROL] received 42 early, re-reading")
 					nbReceived = receiveControlPacket(buffer)
-				if (nbReceived != 155):
-					raise RestartException("Expected 155 bytes, received %d" % nbReceived)
+				if (nbReceived != 155 and nbReceived != 156):
+					raise RestartException("Expected 155 bytes, received %d" % nbReceived, 15)
 			except socket.timeout:
-				raise RestartException("Socket timeout 3")
+				raise RestartException("Socket timeout 3",15)
 			except KeyboardInterrupt:
 				raise
 				
@@ -279,9 +279,9 @@ try:
 					print("[CONTROL] received 42 late, re-reading")
 					nbReceived = receiveControlPacket(buffer)
 				if (nbReceived != 368):
-					raise RestartException("Expected 368 bytes, received %d" % nbReceived)
+					raise RestartException("Expected 368 bytes, received %d" % nbReceived,15)
 			except socket.timeout:
-				raise RestartException("Socket timeout 4")
+				raise RestartException("Socket timeout 4",15)
 			except KeyboardInterrupt:
 				raise
 				
@@ -641,7 +641,7 @@ try:
 					sendContinuePacket(packet)
 					
 		except RestartException as resExc:
-			print("[ERROR] restarting global loop due to exception: %s" % resExc.msg)
+			print("[ERROR] restarting global loop in %d seconds due to exception: %s" % (resExc.delay,resExc.msg))
 			# Let the camera breathe a bit before trying again
 			time.sleep(resExc.delay)
 			pass
